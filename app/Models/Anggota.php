@@ -12,6 +12,8 @@ class Anggota extends Model
     use HasFactory;
 
     protected $primaryKey = 'no_anggota';
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     protected $fillable = [
         'no_anggota',
@@ -25,7 +27,7 @@ class Anggota extends Model
         'kelamin',
         'agama',
         'fakultas_id',
-        'jurusan_id',
+        'program_studi_id',
         'email',
     ];
 
