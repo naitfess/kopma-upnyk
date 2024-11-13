@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('username');
             $table->string('password');
             $table->string('no_anggota');
+            $table->string('role')->default('anggota');
+            $table->timestamps();
 
             $table->foreign('no_anggota')->references('no_anggota')->on('anggota');
         });

@@ -4,49 +4,74 @@ namespace App\Http\Controllers;
 
 use App\Models\Poin;
 use App\Models\Anggota;
+use App\Models\Fakultas;
 use App\Models\Pendaftaran;
+use App\Models\ProgramStudi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PendaftaranController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('pendaftaran.index');
+        $program_studi = ProgramStudi::all();
+        $fakultas = Fakultas::all();
+        $program_studi->pop();
+        $fakultas->pop();
+        return view('pendaftaran.index', [
+            'program_studi' => $program_studi,
+            'fakultas' => $fakultas,
+        ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'nama' => 'required',
-            'nim' => 'required',
+            'nim' => 'required|unique:pendaftaran,nim',
             'no_wa' => 'required',
-            'ttl' => 'required',
+            'tempat_lahir' => 'required',
+            'tanggal_lahir' => 'required|date',
             'alamat' => 'required',
-            'kelamin' => 'required',
+            'jenis_kelamin' => 'required',
             'agama' => 'required',
-            'fakultas_id' => 'required',
-            'program_studi_id' => 'required',
-            'email' => 'required',
-            'metode_pembayaran' => 'required',
-            'status' => 'pendaftar'
+            'fakultas_id' => 'required|exists:fakultas,id',
+            'program_studi_id' => 'required|exists:program_studi,id',
+            'email' => 'required|email',
+            'metode' => 'required',
         ]);
 
-        if ($request->metode_pembayaran == 'transfer') {
+        if ($request->metode == 'Transfer') {
             $request->validate([
-                'bukti' => 'required|image|mimes:jpeg,png,jpg,pdf|max:2048'
+                'bukti' => 'required|image|mimes:jpeg,png,jpg|max:2048'
             ]);
+
+            // Upload image ke storage
+            if ($request->hasFile('bukti')) {
+                $file = $request->file('bukti');
+                $filename = time() . '.' . $file->getClientOriginalExtension();
+
+                // Simpan file ke storage/app/public/bukti
+                $file->storeAs('bukti', $filename, 'public');
+
+                // Simpan path ke database
+                $buktiPath = 'bukti/' . $filename;
+                $request->merge(['bukti_path' => $buktiPath]);
+            }
         }
 
-        $pendaftaran = Pendaftaran::create($request->all());
+        try {
+            $pendaftaran = Pendaftaran::create($request->all());
 
-        if (!$pendaftaran) {
-            return response()->json(['message' => 'Pendaftaran gagal'], 500);
+            if (!$pendaftaran) {
+                return back()->with('error', 'Pendaftaran gagal dibuat.');
+            }
+
+            return redirect()->route('pendaftaran.index')->with('success', 'Pendaftaran berhasil dibuat.');
+        } catch (\Exception $e) {
+            Log::error('PendaftaranController@store', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        return response()->json(['message' => 'Pendaftaran berhasil', 'data' => $pendaftaran], 200);
     }
 
     public function updateStatusConfirm(string $id)
@@ -57,10 +82,10 @@ class PendaftaranController extends Controller
             return response()->json(['message' => 'Pendaftaran tidak ditemukan'], 404);
         }
 
-        $pendaftaran->status = 'konfirmasi';
+        $pendaftaran->status = 'confirm';
         $pendaftaran->save();
 
-        return response()->json(['message' => 'Pendaftaran berhasil dikonfirmasi', 'data' => $pendaftaran], 200);
+        return back()->with('success', 'Pendaftaran berhasil dikonfirmasi');
     }
 
     public function updateStatusAccepted(string $id)
@@ -71,15 +96,29 @@ class PendaftaranController extends Controller
             return response()->json(['message' => 'Pendaftaran tidak ditemukan'], 404);
         }
 
-        $pendaftaran->status = 'diterima';
+        $pendaftaran->status = 'accepted';
         $pendaftaran->save();
 
-        return response()->json(['message' => 'Pendaftaran berhasil diterima', 'data' => $pendaftaran], 200);
+        return back()->with('success', 'Pendaftaran berhasil Diterima');
+    }
+
+    public function updateStatusRejected(string $id)
+    {
+        $pendaftaran = Pendaftaran::find($id);
+
+        if (!$pendaftaran) {
+            return response()->json(['message' => 'Pendaftaran tidak ditemukan'], 404);
+        }
+
+        $pendaftaran->status = 'rejected';
+        $pendaftaran->save();
+
+        return back()->with('success', 'Pendaftaran berhasil ditolak');
     }
 
     public function moveToAnggota()
     {
-        $pendaftaran = Pendaftaran::where('status', 'diterima')->get();
+        $pendaftaran = Pendaftaran::where('status', 'accepted')->get();
 
         foreach ($pendaftaran as $p) {
             $no_anggota = $p->nim;
@@ -88,9 +127,10 @@ class PendaftaranController extends Controller
                 'nama' => $p->nama,
                 'nim' => $p->nim,
                 'no_wa' => $p->no_wa,
-                'ttl' => $p->ttl,
+                'tempat_lahir' => $p->tempat_lahir,
+                'tanggal_lahir' => $p->tanggal_lahir,
                 'alamat' => $p->alamat,
-                'kelamin' => $p->kelamin,
+                'jenis_kelamin' => $p->jenis_kelamin,
                 'agama' => $p->agama,
                 'fakultas_id' => $p->fakultas_id,
                 'program_studi_id' => $p->program_studi_id,
@@ -121,6 +161,6 @@ class PendaftaranController extends Controller
 
         $pendaftaran->delete();
 
-        return response()->json(['message' => 'Pendaftaran berhasil dihapus'], 200);
+        return back()->with('success', 'Pendaftaran berhasil dihapus');
     }
 }

@@ -96,11 +96,11 @@
             </h3>
             <hr>
             <!-- Konten -->
-            <div class="card mt-3">
+            <div class="card my-3">
                 <div class="card-header text-white bg-secondary">
-                    <a href="{{ route('psda.pendaftaran', ['status' => 'new']) }}" class="select2">Pendaftar</a>
-                    <a href="{{ route('psda.pendaftaran', ['status' => 'confirm']) }}" class="select1">Konfirmasi</a>
-                    <a href="{{ route('psda.pendaftaran', ['status' => 'accepted']) }}" class="select2">Di terima</a>
+                    <a href="{{ route('psda.pendaftaran', ['status' => 'new']) }}" class="select1">Pendaftar</a>
+                    <a href="{{ route('psda.pendaftaran', ['status' => 'confirm']) }}" class="select2">Konfirmasi</a>
+                    <a href="{{ route('psda.pendaftaran', ['status' => 'accepted']) }}" class="select2">Diterima</a>
                     <input type="text" class="input" id="searchInput" placeholder="Cari data..."
                         style="float: right; border:none; border-radius:5px;">
                 </div>
@@ -120,6 +120,7 @@
                         style="width: max-content;">
                         <thead>
                             <tr>
+                                <th scope="col">Waktu Daftar</th>
                                 <th scope="col">Nama</th>
                                 <th scope="col">NIM</th>
                                 <th scope="col">No. WhatsApp</th>
@@ -132,12 +133,15 @@
                                 <th scope="col">Prodi</th>
                                 <th scope="col">E-mail</th>
                                 <th scope="col">Metode</th>
+                                <th scope="col">Bukti</th>
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($pendaftaran as $p)
                                 <tr>
+                                    <td scope="row">{{ \Carbon\Carbon::parse($p->created_at)->format('d-m-Y') }}
+                                    </td>
                                     <td scope="row">{{ $p->nama }}</td>
                                     <td scope="row">{{ $p->nim }}</td>
                                     <td scope="row">{{ $p->no_wa }}</td>
@@ -151,18 +155,26 @@
                                     <td scope="row">{{ $p->email }}</td>
                                     <td scope="row">{{ $p->metode }}</td>
                                     <td scope="row">
-                                        <form action="{{ route('pendaftaran.reject', ['id' => $p->id]) }}"
+                                        @if ($p->bukti_path)
+                                            <a href="{{ asset('storage/' . $p->bukti_path) }}" target="_blank">Lihat
+                                                Bukti</a>
+                                        @else
+                                            Tidak ada bukti
+                                        @endif
+                                    </td>
+                                    <td scope="row">
+                                        <form action="{{ route('pendaftaran.delete', ['id' => $p->id]) }}"
                                             method="POST" style="display:inline;"
                                             onsubmit="return confirm('Yakin tolak {{ $p->nama }}?')">
                                             @csrf
-                                            @method('PUT')
+                                            @method('DELETE')
                                             <button type="submit" class="btn btn-danger"><i
                                                     class="bi bi-trash"></i></button>
                                         </form>
 
-                                        <form action="{{ route('pendaftaran.accept', ['id' => $p->id]) }}"
+                                        <form action="{{ route('pendaftaran.confirm', ['id' => $p->id]) }}"
                                             method="POST" style="display:inline;"
-                                            onsubmit="return confirm('Yakin terima {{ $p->nama }}?')">
+                                            onsubmit="return confirm('Yakin konfirmasi {{ $p->nama }}?')">
                                             @csrf
                                             @method('PUT')
                                             <button type="submit" class="btn btn-success"><i

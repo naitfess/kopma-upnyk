@@ -13,21 +13,21 @@ return new class extends Migration
     {
         Schema::create('pendaftaran', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('waktu');
             $table->string('nama');
-            $table->string('nim');
+            $table->string('nim')->unique();
             $table->string('no_wa');
-            $table->string('tempat_lahir');
+            $table->string('tempat_lahir')->nullable();
             $table->date('tanggal_lahir');
             $table->string('alamat');
-            $table->string('kelamin');
+            $table->string('jenis_kelamin');
             $table->string('agama');
             $table->unsignedBigInteger('fakultas_id');
             $table->unsignedBigInteger('program_studi_id');
             $table->string('email');
             $table->string('metode');
-            $table->text('bukti');
-            $table->string('status');
+            $table->text('bukti_path')->nullable();
+            $table->string('status')->default('new');
+            $table->timestamps();
 
             $table->foreign('fakultas_id')->references('id')->on('fakultas');
             $table->foreign('program_studi_id')->references('id')->on('program_studi');

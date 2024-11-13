@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Poin;
+use App\Models\User;
 use App\Models\Anggota;
+use App\Models\JenisPoin;
 use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
 
@@ -17,17 +19,19 @@ class PSDAController extends Controller
 
     public function showPoin()
     {
-        $data = ['poin' => Poin::all()];
-        return view('psda.poin.index', $data);
+        $data = Poin::with(['anggota' => function ($query) {
+            $query->select('no_anggota', 'nama');
+        }])->select('no_anggota', 'total')->get();
+        return view('psda.poin.index', ['poin' => $data]);
     }
 
     public function showPendaftaran()
     {
         $status = request()->query('status');
         switch ($status) {
-            case 'pending':
-                $data = ['pendaftaran' => Pendaftaran::where('status', 'pending')->get()];
-                return view('psda.pendaftaran.pending', $data);
+            case 'new':
+                $data = ['pendaftaran' => Pendaftaran::where('status', 'new')->get()];
+                return view('psda.pendaftaran.new', $data);
             case 'confirm':
                 $data = ['pendaftaran' => Pendaftaran::where('status', 'confirm')->get()];
                 return view('psda.pendaftaran.confirm', $data);
@@ -75,22 +79,23 @@ class PSDAController extends Controller
         return response()->json(['message' => 'Anggota created', 'data' => $anggota], 201);
     }
 
-    public function edit(string $no_anggota)
+    public function editAnggota(string $no_anggota)
     {
-        $anggota = Anggota::find($no_anggota);
+        $selectedAnggota = Anggota::find($no_anggota);
+        $anggota = Anggota::all();
 
-        if (!$anggota) {
+        if (!$selectedAnggota) {
             return response()->json(['message' => 'Anggota not found'], 404);
         }
 
-        return response()->json(['data' => $anggota], 200);
+        return view('psda.anggota.index', ['selectedAnggota' => $selectedAnggota, 'anggota' => $anggota]);
     }
 
     public function updateAnggota(Request $request, string $no_anggota)
     {
-        $anggota = Anggota::find($no_anggota);
+        $selectedAnggota = Anggota::find($no_anggota);
 
-        if (!$anggota) {
+        if (!$selectedAnggota) {
             return response()->json(['message' => 'Anggota not found'], 404);
         }
 
@@ -98,7 +103,8 @@ class PSDAController extends Controller
             'nama' => 'required',
             'nim' => 'required',
             'no_wa' => 'required',
-            'ttl' => 'required',
+            'tempat_lahir' => 'required',
+            'tanggal_lahir' => 'required',
             'alamat' => 'required',
             'kelamin' => 'required',
             'agama' => 'required',
@@ -107,21 +113,82 @@ class PSDAController extends Controller
             'email' => 'required',
         ]);
 
-        $anggota->update($request->all());
+        $selectedAnggota->update($request->all());
 
-        return response()->json(['message' => 'Anggota updated', 'data' => $anggota], 200);
+        return response()->json(['message' => 'Anggota updated', 'data' => $selectedAnggota], 200);
     }
 
-    public function destroy(string $no_anggota)
+    public function destroyAnggota(string $no_anggota)
     {
-        $anggota = Anggota::find($no_anggota);
+        $selectedAnggota = Anggota::find($no_anggota);
 
-        if (!$anggota) {
+        if (!$selectedAnggota) {
             return response()->json(['message' => 'Anggota not found'], 404);
         }
+        $selectedPoin = Poin::where('no_anggota', $no_anggota)->first();
+        $selectedUser = User::where('no_anggota', $no_anggota)->first();
 
-        $anggota->delete();
+        if ($selectedPoin) {
+            $selectedPoin->delete();
+        }
+        if ($selectedUser) {
+            $selectedUser->delete();
+        }
 
+        $selectedAnggota->delete();
         return response()->json(['message' => 'Anggota deleted'], 200);
+    }
+
+    public function editPoin(string $no_anggota)
+    {
+        $selectedPoin = Poin::with(['anggota' => function ($query) {
+            $query->select('no_anggota', 'nama');
+        }])->where('no_anggota', $no_anggota)->first();
+
+        if (!$selectedPoin) {
+            return response()->json(['message' => 'Poin not found'], 404);
+        }
+
+        $poin = Poin::all();
+
+        return view('psda.poin.index', ['selectedPoin' => $selectedPoin, 'poin' => $poin]);
+    }
+
+    public function updatePoin(Request $request)
+    {
+        $request->validate([
+            'no_anggota' => 'required',
+            'jenis_poin' => 'required',
+        ]);
+
+
+        $poin = Poin::where('no_anggota', $request->no_anggota)->first();
+
+        if (!$poin) {
+            return response()->json(['message' => 'Poin not found'], 404);
+        }
+
+        $tambahanPoin = JenisPoin::where('jenis', $request->jenis_poin)->first();
+        if (!$tambahanPoin) {
+            return response()->json(['message' => 'Jenis poin not found'], 404);
+        }
+
+        $poin->{$request->jenis_poin} += $tambahanPoin->tambahan_poin;
+        $poin->total += $tambahanPoin->tambahan_poin;
+        $poin->save();
+
+        return response()->json(['message' => 'Poin updated', 'data' => $poin], 200);
+    }
+
+    public function destroyPoin(string $no_anggota)
+    {
+        $selectedPoin = Poin::where('no_anggota', $no_anggota)->first();
+
+        if (!$selectedPoin) {
+            return response()->json(['message' => 'Poin not found'], 404);
+        }
+
+        $selectedPoin->delete();
+        return response()->json(['message' => 'Poin deleted'], 200);
     }
 }

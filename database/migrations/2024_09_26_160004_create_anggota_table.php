@@ -16,16 +16,17 @@ return new class extends Migration
             $table->string('nama');
             $table->string('nim');
             $table->string('no_wa');
-            $table->string('ttl');
-            // $table->string('tempat_lahir');
-            // $table->date('tanggal_lahir');
+            // $table->string('ttl');
+            $table->string('tempat_lahir')->nullable();
+            $table->date('tanggal_lahir')->nullable();
             $table->string('alamat');
-            $table->string('kelamin');
+            $table->string('jenis_kelamin');
             $table->string('agama');
             $table->unsignedBigInteger('fakultas_id');
             $table->unsignedBigInteger('program_studi_id');
             $table->string('email');
             $table->integer('total_simpanan')->default(0);
+            $table->timestamps();
 
             $table->foreign('fakultas_id')->references('id')->on('fakultas');
             $table->foreign('program_studi_id')->references('id')->on('program_studi');

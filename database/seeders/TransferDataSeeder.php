@@ -89,20 +89,22 @@ class TransferDataSeeder extends Seeder
             $data->program_studi_id = $programStudiMapping[strtolower($data->jurusan)] ?? null;
 
             // Insert ke database baru
-            DB::connection('kopma_new')->table('anggota')->insert([
-                'no_anggota' => $data->no_anggota ?? 'kosong',
-                'nama' => $data->nama ?? 'kosong',
-                'nim' => $data->nim ?? 'kosong',
-                'no_wa' => $data->no_wa ?? 'kosong',
-                'ttl' => $data->ttl ?? 'kosong',
-                // 'tempat_lahir' => $tempatLahir,
-                // 'tanggal_lahir' => $tanggalLahir,
-                'alamat' => $data->alamat ?? 'kosong',
-                'kelamin' => $data->kelamin ?? 'kosong',
-                'agama' => $data->agama ?? 'kosong',
+            DB::connection('kopma')->table('anggota')->insert([
+                'no_anggota' => $data->no_anggota ?? null,
+                'nama' => $data->nama ?? null,
+                'nim' => $data->nim ?? null,
+                'no_wa' => $data->no_wa ?? null,
+                // 'ttl' => $data->ttl ?? null,
+                'tempat_lahir' => $tempatLahir ?? null,
+                'tanggal_lahir' => $tanggalLahir ?? null,
+                'alamat' => $data->alamat ?? null,
+                'jenis_kelamin' => $data->kelamin ?? null,
+                'agama' => $data->agama ?? null,
                 'fakultas_id' => $data->fakultas_id ?? 6,
                 'program_studi_id' => $data->program_studi_id ?? 24,
-                'email' => $data->email ?? 'kosong',
+                'email' => $data->email ?? null,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
     }

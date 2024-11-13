@@ -46,6 +46,9 @@ class ProgramStudiSeeder extends Seeder
                 ['nama' => 'Teknik Perminyakan'],
                 ['nama' => 'Teknik Metalurgi'],
                 ['nama' => 'Teknik Geomatika'],
+
+            ],
+            '6' => [
                 ['nama' => 'kosong'],
             ]
         ];

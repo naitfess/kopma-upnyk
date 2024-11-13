@@ -15,7 +15,7 @@
 
 <body class="dark-mode">
     <nav class="header navbar fixed-top">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="{{ route('dashboard') }}">
             <img src="{{ asset('img/Logo.png') }}" alt="Logo Kopma" height="45" style="padding-left: 40px;">
         </a>
         <div class="theme-switch" onclick="toggleTheme()">
@@ -26,19 +26,19 @@
         </div>
     </nav>
     <div class="sidebar">
-        <a href="../dashboard.php"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+        <a href="{{ route('dashboard') }}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
         <div class="menu-item" onclick="toggleSubmenu(this)">
             <a href="#"><i class="fa-solid fa-users"></i> PSDA</a>
             <div class="submenu">
-                <a href="data_anggota.php">Data Anggota</a>
-                <a href="point_keaktifan.php">Point Keaktifan</a>
-                <a href="register/pendaftar.php">Pendaftaran</a>
+                <a href="{{ route('psda.anggota') }}">Data Anggota</a>
+                <a href="{{ route('psda.poin') }}">Point Keaktifan</a>
+                <a href="{{ route('psda.pendaftaran', ['status' => 'new']) }}">Pendaftaran</a>
             </div>
         </div>
         <div class="menu-item" onclick="toggleSubmenu(this)">
             <a href="#"><i class="fa-solid fa-dollar-sign"></i> Keuangan</a>
             <div class="submenu">
-                <a href="../Keuangan/simpanan.php">Simpanan</a>
+                <a href="{{ route('keuangan.simpanan', ['type' => 'sw']) }}">Simpanan</a>
                 <a href="#">Coming Soon</a>
                 <a href="#">Coming Soon</a>
             </div>
@@ -83,7 +83,7 @@
                 <a href="#">Coming Soon</a>
             </div>
         </div>
-        <a href="../../../config/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <a href="{{ route('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
         <hr>
     </div>
     <!-- Konten Utama -->
@@ -97,83 +97,93 @@
                     Create / Edit Data
                 </div>
                 <div class="card-body" style="width: 100%;">
-                    <form action="/psda/anggota" method="POST">
+                    <form
+                        action="{{ route('psda.anggota.update', ['id' => isset($selectedAnggota) ? $selectedAnggota->no_anggota : 'error']) }}"
+                        method="POST">
+                        @method('PUT')
                         @csrf
                         <div class="mb-3 row">
                             <label for="no-anggota" class="col-sm-2 col-form-label">No. Anggota</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="no_anggota" name="no_anggota"
-                                    value="">
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->no_anggota }}@endisset">
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="nama" class="col-sm-2 col-form-label">Nama</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="nama" name="nama"
-                                    value="">
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->nama }}@endisset">
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="nim" class="col-sm-2 col-form-label">NIM</label>
                             <div class="col-sm-10">
                                 <input type="number" class="form-control" name="nim" id="nim"
-                                    value="">
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->nim }}@endisset">
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="no_wa" class="col-sm-2 col-form-label">No. WhatsApp </label>
                             <div class="col-sm-10">
                                 <input type="number" class="form-control" id="no_wa" name="no_wa"
-                                    value="">
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->no_wa }}@endisset">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="ttl" class="col-sm-2 col-form-label">Tempat Lahir</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="ttl" name="tempat_lahir"
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->tempat_lahir }}@endisset">
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="ttl" class="col-sm-2 col-form-label">Tanggal Lahir</label>
                             <div class="col-sm-10">
-                                <input type="date" class="form-control" id="ttl" name="ttl"
-                                    value="">
+                                <input type="date" class="form-control" id="ttl" name="tanggal_lahir"
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->tanggal_lahir }}@endisset">
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="alamat" class="col-sm-2 col-form-label">Alamat</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" name="alamat" id="alamat"
-                                    value="">
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->alamat }}@endisset">
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="kelamin" class="col-sm-2 col-form-label">Jenis Kelamin</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="kelamin" id="kelamin"
-                                    value="">
+                                <input type="text" class="form-control" name="kelamin" id="jenis_kelamin"
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->jenis_kelamin }}@endisset">
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="agama" class="col-sm-2 col-form-label">Agama</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" name="agama" id="agama"
-                                    value="">
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->agama }}@endisset">
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="fakultas" class="col-sm-2 col-form-label">Fakultas</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="fakultas" name="fakultas_id"
-                                    value="">
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->fakultas_id }}@endisset">
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="prodi" class="col-sm-2 col-form-label">Prodi</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="prodi" name="program_studi_id"
-                                    value="">
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->program_studi_id }}@endisset">
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="email" class="col-sm-2 col-form-label">E-Mail</label>
                             <div class="col-sm-10">
                                 <input type="email" class="form-control" name="email" id="email"
-                                    value="">
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->email }}@endisset">
                             </div>
                         </div>
                         <div class="col-12">
@@ -198,6 +208,7 @@
                                 <th scope="col">Nama</th>
                                 <th scope="col">NIM</th>
                                 <th scope="col">No. WhatsApp</th>
+                                <th scope="col">Tempat Lahir</th>
                                 <th scope="col">Tanggal Lahir</th>
                                 <th scope="col">Alamat</th>
                                 <th scope="col">Jenis Kelamin</th>
@@ -215,20 +226,26 @@
                                     <td>{{ $a->nama }}</td>
                                     <td>{{ $a->nim }}</td>
                                     <td>{{ $a->no_wa }}</td>
-                                    <td>{{ $a->ttl }}</td>
+                                    <td>{{ $a->tempat_lahir }}</td>
+                                    <td>{{ $a->tanggal_lahir }}</td>
                                     <td>{{ $a->alamat }}</td>
-                                    <td>{{ $a->kelamin }}</td>
+                                    <td>{{ $a->jenis_kelamin }}</td>
                                     <td>{{ $a->agama }}</td>
                                     <td>{{ $a->fakultas_id }}</td>
                                     <td>{{ $a->program_studi_id }}</td>
                                     <td>{{ $a->email }}</td>
                                     <td scope="row">
-                                        <a href="data_anggota.php?op=edit&nid="><button type="button"
-                                                class="btn btn-warning"><i
+                                        <a href="{{ route('psda.anggota.edit', ['id' => $a->no_anggota]) }}"><button
+                                                type="button" class="btn btn-warning"><i
                                                     class="bi bi-pencil-square"></i></button></a>
-                                        <a href="data_anggota.php?op=delete&aid="
-                                            onclick="return confirm('Yakin hapus data?')"><button type="button"
-                                                class="btn btn-danger"><i class="bi bi-trash"></i></button></a>
+                                        <form action="{{ route('psda.anggota.delete', ['id' => $a->no_anggota]) }}"
+                                            method="POST" style="display:inline;"
+                                            onsubmit="return confirm('Yakin hapus data?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger"><i
+                                                    class="bi bi-trash"></i></button>
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach

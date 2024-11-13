@@ -17,7 +17,7 @@
     <!-- Navbar -->
     <nav class="navbar bg-success">
         <div class="container">
-            <a class="navbar-brand" href="https://kopma-upnvy.com">
+            <a class="navbar-brand" href="/">
                 <img src="{{ asset('img/Logo.png') }}" alt="Logo" height="45">
             </a>
             <div class="theme-switch" onclick="toggleTheme()">
@@ -27,11 +27,24 @@
     </nav>
     <!-- Batas Navbar -->
     <!--Form-->
+
     <div class="container mt-2">
         <div class="card mb-5" style="width: 100%;">
             <img src="{{ asset('img/pendaftaran/brosur2.png') }}" class="card-img-top">
         </div>
-        <form enctype="multipart/form-data" action="../../../config/pendaftaran.php" method="POST">
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+        <form enctype="multipart/form-data" action="{{ Route('pendaftaran.store') }}" method="POST">
+            @csrf
             <div class="mb-3 input">
                 <label for="nama" class="form-label">Nama</label>
                 <input type="text" class="form-control" required id="nama" name="nama">
@@ -45,8 +58,12 @@
                 <input type="number" class="form-control" required id="no_wa" name="no_wa">
             </div>
             <div class="mb-3 input">
-                <label for="ttl" class="form-label">Tanggal Lahir</label>
-                <input type="date" class="form-control" required id="ttl" name="ttl">
+                <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
+                <input type="text" class="form-control" required id="tempat_lahir" name="tempat_lahir">
+            </div>
+            <div class="mb-3 input">
+                <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+                <input type="date" class="form-control" required id="tanggal_lahir" name="tanggal_lahir">
             </div>
             <div class="mb-3 input">
                 <label for="alamat" class="form-label">Alamat</label>
@@ -54,7 +71,7 @@
             </div>
             <div class="mb-3 input">
                 <label for="kelamin" class="form-label">Jenis Kelamin</label>
-                <select id="kelamin" class="form-select" name="kelamin" required>
+                <select id="kelamin" class="form-select" name="jenis_kelamin" required>
                     <option value="" selected>-Pilih Jenis Kelamin-</option>
                     <option value="Laki-laki">Laki-laki</option>
                     <option value="Perempuan">Perempuan</option>
@@ -74,18 +91,21 @@
             </div>
             <div class="mb-3 input">
                 <label for="fakultas" class="form-label">Fakultas</label>
-                <select id="fakultas" class="form-select" name="fakultas" required>
+                <select id="fakultas" class="form-select" name="fakultas_id" required>
                     <option value="" selected>-Pilih Fakultas-</option>
-                    <option value="FEB">FEB</option>
-                    <option value="FTM">FTM</option>
-                    <option value="FP">FP</option>
-                    <option value="FTI">FTI</option>
-                    <option value="FISIP">FISIP</option>
+                    @foreach ($fakultas as $f)
+                        <option value="{{ $f->id }}">{{ $f->nama_fakultas }}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="mb-3 input">
-                <label for="jurusan" class="form-label">Jurusan</label>
-                <input type="text" class="form-control" required id="jurusan" name="jurusan">
+                <label for="jurusan" class="form-label">Program Studi</label>
+                <select id="jurusan" class="form-select" name="program_studi_id" required>
+                    <option value="" selected>-Pilih Program Studi-</option>
+                    @foreach ($program_studi as $ps)
+                        <option value="{{ $ps->id }}">{{ $ps->nama_program_studi }}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="mb-3 input">
                 <label for="email" class="form-label">E-Mail</label>
@@ -102,7 +122,7 @@
                 <input type="file" class="form-control" id="bukti" name="bukti">
                 <p style="color: red;">*Ubah nama file menjadi [NIM].jpg/.png/.jpeg</p>
             </div>
-            <button type="submit" name="submit" class="btn btn-success">Submit</button>
+            <button type="submit" class="btn btn-success">Submit</button>
         </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

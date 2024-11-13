@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Anggota extends Model
 {
     public $table = 'anggota';
-    public $timestamps = false;
     use HasFactory;
 
     protected $primaryKey = 'no_anggota';
@@ -20,11 +19,11 @@ class Anggota extends Model
         'nama',
         'nim',
         'no_wa',
-        'ttl',
-        // 'tempat_lahir',
-        // 'tanggal_lahir',
+        // 'ttl',
+        'tempat_lahir',
+        'tanggal_lahir',
         'alamat',
-        'kelamin',
+        'jenis_kelamin',
         'agama',
         'fakultas_id',
         'program_studi_id',

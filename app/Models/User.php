@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class User extends Authenticatable
 {
     public $table = 'user';
-    public $timestamps = false;
     use HasFactory, Notifiable;
 
     protected $fillable = [

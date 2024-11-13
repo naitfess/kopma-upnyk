@@ -14,12 +14,36 @@ class KeuanganController extends Controller
         $data = [];
         switch ($type) {
             case 'sw':
-                $data = Simpanan::where('jenis_simpanan_id', '1')->get();
-                return view('keuangan.simpanan.sw', $data);
+                $data_simpanan = [];
+                $simpanan = Simpanan::with('anggota')
+                    ->where('jenis_simpanan_id', 1)
+                    ->get()
+                    ->groupBy('keterangan');
+
+                //jumlahkan nominal simpanan per keterangan per user
+                foreach ($simpanan as $year => $simapan_per_year) {
+                    foreach ($simapan_per_year as $sim) {
+                        // Jika anggota belum ada dalam array, buat entry baru
+                        if (!isset($data_simpanan[$sim->anggota->no_anggota])) {
+                            $data_simpanan[$sim->anggota->no_anggota] = ['nama' => $sim->anggota->nama];
+                        }
+                        // Menambahkan nominal simpanan untuk anggota berdasarkan tahun (keterangan)
+                        // Jika sudah ada simpanan di tahun yang sama, kita jumlahkan nominalnya
+                        if (isset($data_simpanan[$sim->anggota->no_anggota][$year])) {
+                            $data_simpanan[$sim->anggota->no_anggota][$year] += $sim->nominal; // Menjumlahkan nominal
+                        } else {
+                            $data_simpanan[$sim->anggota->no_anggota][$year] = $sim->nominal; // Menambahkan nominal jika belum ada
+                        }
+                    }
+                }
+                return view('keuangan.simpanan.sw', ['data_simpanan' => $data_simpanan]);
                 break;
             case 'ssshusp':
-                $data = Simpanan::where('jenis_simpanan_id', '2')->get();
-                return view('keuangan.simpanan.ssshusp', $data);
+                $data_simpanan = Simpanan::with('anggota')
+                    ->whereIn('jenis_simpanan_id', [2, 3, 4])
+                    ->get()
+                    ->groupBy('jenis_simpanan_id');
+                return view('keuangan.simpanan.ssshusp', ['data_simpanan' => $data_simpanan]);
                 break;
             case 'akumulasi':
                 $data = Simpanan::where('jenis_simpanan_id', '3')->get();

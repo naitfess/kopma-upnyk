@@ -16,7 +16,7 @@ class TablePoinSeeder extends Seeder
         $dataLama = DB::connection('kopma_lama')->table('poin')->get();
 
         foreach ($dataLama as $data) {
-            DB::connection('kopma_new')->table('poin')->insert([
+            DB::connection('kopma')->table('poin')->insert([
                 'no_anggota' => $data->no_anggota,
                 'i1' => $data->i1,
                 'i2' => $data->i2,

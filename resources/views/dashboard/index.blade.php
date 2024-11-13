@@ -15,7 +15,7 @@
 
 <body class="dark-mode">
     <nav class="header navbar fixed-top">
-        <a class="navbar-brand" href="/dashboard">
+        <a class="navbar-brand" href="{{ route('dashboard') }}">
             <img src="{{ asset('img/Logo.png') }}" alt="Logo Kopma" height="45" style="padding-left: 40px;">
         </a>
         <div class="theme-switch" onclick="toggleTheme()">
@@ -26,19 +26,19 @@
         </div>
     </nav>
     <div class="sidebar">
-        <a href="/dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+        <a href="{{ route('dashboard') }}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
         <div class="menu-item" onclick="toggleSubmenu(this)">
             <a href="#"><i class="fa-solid fa-users"></i> PSDA</a>
             <div class="submenu">
-                <a href="psda/anggota">Data Anggota</a>
-                <a href="psda/poin">Point Keaktifan</a>
-                <a href="psda/pendaftaran?status=pending">Pendaftaran</a>
+                <a href="{{ route('psda.anggota') }}">Data Anggota</a>
+                <a href="{{ route('psda.poin') }}">Point Keaktifan</a>
+                <a href="{{ route('psda.pendaftaran', ['status' => 'new']) }}">Pendaftaran</a>
             </div>
         </div>
         <div class="menu-item" onclick="toggleSubmenu(this)">
             <a href="#"><i class="fa-solid fa-dollar-sign"></i> Keuangan</a>
             <div class="submenu">
-                <a href="keuangan/simpanan?type=sw">Simpanan</a>
+                <a href="{{ route('keuangan.simpanan', ['type' => 'sw']) }}">Simpanan</a>
                 <a href="#">Coming Soon</a>
                 <a href="#">Coming Soon</a>
             </div>
@@ -83,7 +83,7 @@
                 <a href="#">Coming Soon</a>
             </div>
         </div>
-        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <a href="{{ route('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
         <hr>
         {{-- <p><?php echo $versi; ?></p> --}}
     </div>
@@ -100,7 +100,7 @@
                     </div>
                     <h5 class="card-title text-white">Total Anggota</h5>
                     <div class="display-4 text-white">{{ $anggota }}</div>
-                    <a href="psda/anggota" class="view">
+                    <a href="{{ route('psda.anggota') }}" class="view">
                         <p class="card-text text-white">Lihat Detail <i class="bi bi-caret-right"></i></p>
                     </a>
                 </div>
@@ -112,7 +112,7 @@
                     </div>
                     <h5 class="card-title text-white">Pendaftar</h5>
                     <div class="display-4 text-white">{{ $pendaftar }}</div>
-                    <a href="psda/pendafataran?status=pending" class="view">
+                    <a href="{{ route('psda.pendaftaran', ['status' => 'new']) }}" class="view">
                         <p class="card-text text-white">Lihat Detail <i class="bi bi-caret-right"></i></p>
                     </a>
                 </div>
@@ -124,7 +124,7 @@
                     </div>
                     <h5 class="card-title text-white">Di terima</h5>
                     <div class="display-4 text-white">{{ $diterima }}</div>
-                    <a href="psda/pendaftaran?status=accepted" class="view">
+                    <a href="{{ route('psda.pendaftaran', ['status' => 'accepted']) }}" class="view">
                         <p class="card-text text-white">Lihat Detail <i class="bi bi-caret-right"></i></p>
                     </a>
                 </div>
