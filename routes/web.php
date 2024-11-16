@@ -43,3 +43,8 @@ Route::delete('/psda/poin/{id}', [PSDAController::class, 'destroyPoin'])->middle
 Route::get('/psda/pendaftaran', [PSDAController::class, 'showPendaftaran'])->middleware('auth')->name('psda.pendaftaran');
 
 Route::get('/keuangan/simpanan', [KeuanganController::class, 'showSimpanan'])->middleware('auth')->name('keuangan.simpanan');
+
+Route::post('/keuangan/sw', [KeuanganController::class, 'storeSimpananWajib'])->middleware('auth')->name('keuangan.sw.store');
+Route::get('/keuangan/sw/{id}/edit', [KeuanganController::class, 'editSimpananWajib'])->middleware('auth')->name('keuangan.sw.edit');
+
+Route::get('/keuangan/ssshusp/{id}/edit', [KeuanganController::class, 'editSSSHUSP'])->middleware('auth')->name('keuangan.ssshusp.edit');

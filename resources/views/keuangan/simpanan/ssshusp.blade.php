@@ -129,14 +129,14 @@
                             <label for="no-anggota" class="col-sm-2 col-form-label">No. Anggota</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="no_anggota" name="no_anggota"
-                                    value="" disabled>
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->no_anggota }}@endisset" disabled>
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="nama" class="col-sm-2 col-form-label">Nama</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="nama" name="nama"
-                                    value="" disabled>
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->nama }}@endisset" disabled>
                             </div>
                         </div>
                         <div class="mb-3 row">
@@ -210,7 +210,7 @@
                                             @endif
                                         </td>
                                         <td scope="row">
-                                            <a href="simpanan?op=ssshusp&id="><button type="button"
+                                            <a href="{{ route('keuangan.ssshusp.edit', ['id' => $simpanan->anggota->no_anggota]) }}"><button type="button"
                                                     class="btn btn-warning"><i
                                                         class="bi bi-pencil-square"></i></button></a>
                                         </td>

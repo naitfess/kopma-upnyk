@@ -55,11 +55,10 @@ class KeuanganController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function storeSimpananWajib(Request $request)
     {
         $request->validate([
             'no_anggota' => 'required',
-            'jenis_simpanan_id' => 'required',
             'nominal' => 'required',
             'keterangan' => 'required'
         ]);
@@ -77,15 +76,38 @@ class KeuanganController extends Controller
         return response()->json(['message' => 'Simpanan created', 'data' => $simpanan], 200);
     }
 
-    public function edit(string $id)
+    public function editSimpananWajib(string $no_anggota)
     {
-        $simpanan = Simpanan::find($id);
+        $data_simpanan = [];
+        $selectedAnggota = Anggota::select('no_anggota', 'nama')->where('no_anggota', $no_anggota)->first();
 
-        if (!$simpanan) {
-            return response()->json(['message' => 'Simpanan not found'], 404);
+        if (!$selectedAnggota) {
+            return response()->json(['message' => 'Poin not found'], 404);
         }
 
-        return response()->json(['data' => $simpanan], 200);
+        $simpanan = Simpanan::with('anggota')
+            ->where('jenis_simpanan_id', 1)
+            ->get()
+            ->groupBy('keterangan');
+
+        //jumlahkan nominal simpanan per keterangan per user
+        foreach ($simpanan as $year => $simapan_per_year) {
+            foreach ($simapan_per_year as $sim) {
+                // Jika anggota belum ada dalam array, buat entry baru
+                if (!isset($data_simpanan[$sim->anggota->no_anggota])) {
+                    $data_simpanan[$sim->anggota->no_anggota] = ['nama' => $sim->anggota->nama];
+                }
+                // Menambahkan nominal simpanan untuk anggota berdasarkan tahun (keterangan)
+                // Jika sudah ada simpanan di tahun yang sama, kita jumlahkan nominalnya
+                if (isset($data_simpanan[$sim->anggota->no_anggota][$year])) {
+                    $data_simpanan[$sim->anggota->no_anggota][$year] += $sim->nominal; // Menjumlahkan nominal
+                } else {
+                    $data_simpanan[$sim->anggota->no_anggota][$year] = $sim->nominal; // Menambahkan nominal jika belum ada
+                }
+            }
+        }
+
+        return view('keuangan.simpanan.sw', ['selectedAnggota' => $selectedAnggota, 'data_simpanan' => $data_simpanan]);                
     }
 
     public function update(Request $request, string $id)
@@ -123,5 +145,22 @@ class KeuanganController extends Controller
         $simpanan->delete();
 
         return response()->json(['message' => 'Simpanan deleted'], 200);
+    }
+
+    public function editSSSHUSP(string $no_anggota)
+    {
+        $data_simpanan = [];
+        $selectedAnggota = Anggota::select('no_anggota', 'nama')->where('no_anggota', $no_anggota)->first();
+
+        if (!$selectedAnggota) {
+            return response()->json(['message' => 'Poin not found'], 404);
+        }
+
+        $data_simpanan = Simpanan::with('anggota')
+            ->whereIn('jenis_simpanan_id', [2, 3, 4])
+            ->get()
+            ->groupBy('jenis_simpanan_id');
+
+        return view('keuangan.simpanan.ssshusp', ['selectedAnggota' => $selectedAnggota, 'data_simpanan' => $data_simpanan]);
     }
 }
