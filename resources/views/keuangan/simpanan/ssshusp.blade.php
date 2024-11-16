@@ -124,29 +124,34 @@
                     }
                     ob_end_flush();
                     ?> --}}
-                    <form action="" method="POST">
+                    <form action="{{ route('keuangan.ssshusp.store') }}" method="POST">
+                        @csrf
                         <div class="mb-3 row">
                             <label for="no-anggota" class="col-sm-2 col-form-label">No. Anggota</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="no_anggota" name="no_anggota"
-                                    value="@isset($selectedAnggota){{ $selectedAnggota->no_anggota }}@endisset" disabled>
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->no_anggota }}@endisset"
+                                    disabled>
+                                <input type="hidden" name="no_anggota"
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->no_anggota }}@endisset">
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="nama" class="col-sm-2 col-form-label">Nama</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="nama" name="nama"
-                                    value="@isset($selectedAnggota){{ $selectedAnggota->nama }}@endisset" disabled>
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->nama }}@endisset"
+                                    disabled>
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="tahun" class="col-sm-2 col-form-label">Jenis</label>
                             <div class="col-sm-10">
-                                <select id="tahun" class="form-select" name="jenis">
+                                <select id="tahun" class="form-select" name="jenis_simpanan_id">
                                     <option value="" selected>-Pilih Simpanan-</option>
-                                    <option value="1">SS</option>
-                                    <option value="2">SHU</option>
-                                    <option value="3">SP</option>
+                                    <option value="2">SS</option>
+                                    <option value="3">SHU</option>
+                                    <option value="4">SP</option>
                                 </select>
                             </div>
                         </div>
@@ -158,7 +163,7 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <input type="submit" name="sw" value="Simpan Data" class="btn btn-secondary">
+                            <input type="submit" class="btn btn-secondary">
                         </div>
                     </form>
                 </div>
@@ -183,39 +188,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($data_simpanan as $jenis_simpanan_id => $simpanan_per_jenis)
-                                @foreach ($simpanan_per_jenis as $simpanan)
-                                    <tr>
-                                        <td>{{ $simpanan->anggota->no_anggota }}</td>
-                                        <td>{{ $simpanan->anggota->nama }}</td>
-                                        <td>
-                                            @if ($jenis_simpanan_id == 2)
-                                                {{ 'Rp. ' . number_format($simpanan->nominal, 0, ',', '.') }}
-                                            @else
-                                                Rp. 0
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($jenis_simpanan_id == 3)
-                                                {{ 'Rp. ' . number_format($simpanan->nominal, 0, ',', '.') }}
-                                            @else
-                                                Rp. 0
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($jenis_simpanan_id == 4)
-                                                {{ 'Rp. ' . number_format($simpanan->nominal, 0, ',', '.') }}
-                                            @else
-                                                Rp. 0
-                                            @endif
-                                        </td>
-                                        <td scope="row">
-                                            <a href="{{ route('keuangan.ssshusp.edit', ['id' => $simpanan->anggota->no_anggota]) }}"><button type="button"
-                                                    class="btn btn-warning"><i
-                                                        class="bi bi-pencil-square"></i></button></a>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                            @foreach ($data_simpanan as $no_anggota => $simpanan)
+                                <tr>
+                                    <td scope="row">{{ $no_anggota }}</td>
+                                    <td scope="row">{{ $simpanan['nama'] }}</td>
+                                    <td scope="row">
+                                        {{ isset($simpanan[2]) ? 'Rp. ' . number_format($simpanan[2], 0, ',', '.') : 'Rp. 0' }}
+                                    </td>
+                                    <td scope="row">
+                                        {{ isset($simpanan[3]) ? 'Rp. ' . number_format($simpanan[3], 0, ',', '.') : 'Rp. 0' }}
+                                    </td>
+                                    <td scope="row">
+                                        {{ isset($simpanan[4]) ? 'Rp. ' . number_format($simpanan[4], 0, ',', '.') : 'Rp. 0' }}
+                                    </td>
+                                    <td scope="row">
+                                        <a href="{{ route('keuangan.ssshusp.edit', ['id' => $no_anggota]) }}"><button
+                                                type="button" class="btn btn-warning"><i
+                                                    class="bi bi-pencil-square"></i></button></a>
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>

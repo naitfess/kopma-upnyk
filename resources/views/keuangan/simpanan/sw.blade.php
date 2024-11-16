@@ -124,19 +124,24 @@
                     }
                     ob_end_flush();
                     ?> --}}
-                    <form action="" method="POST">
+                    <form action="{{ route('keuangan.sw.store') }}" method="POST">
+                        @csrf
                         <div class="mb-3 row">
                             <label for="no-anggota" class="col-sm-2 col-form-label">No. Anggota</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="no_anggota" name="no_anggota"
-                                    value="@isset($selectedAnggota){{ $selectedAnggota->no_anggota }}@endisset" disabled>
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->no_anggota }}@endisset"
+                                    disabled>
+                                <input type="hidden" name="no_anggota"
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->no_anggota }}@endisset">
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="nama" class="col-sm-2 col-form-label">Nama</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="nama" name="nama"
-                                    value="@isset($selectedAnggota){{ $selectedAnggota->nama }}@endisset" disabled>
+                                    value="@isset($selectedAnggota){{ $selectedAnggota->nama }}@endisset"
+                                    disabled>
                             </div>
                         </div>
                         <div class="mb-3 row">
@@ -158,7 +163,7 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <input type="submit" name="simpanan" value="Simpan Data" class="btn btn-secondary">
+                            <input type="submit" class="btn btn-secondary">
                         </div>
                     </form>
                 </div>
@@ -195,8 +200,8 @@
                                         </td>
                                     @endfor
                                     <td scope="row">
-                                    <a href="{{ route('keuangan.sw.edit', ['id' => $no_anggota]) }}"><button type="button"
-                                                class="btn btn-warning"><i
+                                        <a href="{{ route('keuangan.sw.edit', ['id' => $no_anggota]) }}"><button
+                                                type="button" class="btn btn-warning"><i
                                                     class="bi bi-pencil-square"></i></button></a>
                                     </td>
                                 </tr>

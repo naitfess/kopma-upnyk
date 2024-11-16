@@ -8,14 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Simpanan extends Model
 {
     public $table = 'simpanan';
-    public $timestamps = false;
     use HasFactory;
 
     protected $fillable = [
         'no_anggota',
         'jenis_simpanan_id',
         'nominal',
-        'waktu',
+        'keterangan'
     ];
 
     public function anggota()

@@ -47,4 +47,5 @@ Route::get('/keuangan/simpanan', [KeuanganController::class, 'showSimpanan'])->m
 Route::post('/keuangan/sw', [KeuanganController::class, 'storeSimpananWajib'])->middleware('auth')->name('keuangan.sw.store');
 Route::get('/keuangan/sw/{id}/edit', [KeuanganController::class, 'editSimpananWajib'])->middleware('auth')->name('keuangan.sw.edit');
 
+Route::post('/keuangan/ssshusp', [KeuanganController::class, 'storeSSSHUSP'])->middleware('auth')->name('keuangan.ssshusp.store');
 Route::get('/keuangan/ssshusp/{id}/edit', [KeuanganController::class, 'editSSSHUSP'])->middleware('auth')->name('keuangan.ssshusp.edit');

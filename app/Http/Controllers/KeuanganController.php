@@ -39,10 +39,28 @@ class KeuanganController extends Controller
                 return view('keuangan.simpanan.sw', ['data_simpanan' => $data_simpanan]);
                 break;
             case 'ssshusp':
-                $data_simpanan = Simpanan::with('anggota')
+                $simpanan = Simpanan::with('anggota')
                     ->whereIn('jenis_simpanan_id', [2, 3, 4])
                     ->get()
                     ->groupBy('jenis_simpanan_id');
+
+                $data_simpanan = [];
+                foreach ($simpanan as $jenis_simpanan_id => $simpanan_per_jenis) {
+                    foreach ($simpanan_per_jenis as $sim) {
+                        // Pastikan data anggota ada sebelum mengakses properti 'nama'
+                        if ($sim->anggota) {
+                            if (!isset($data_simpanan[$sim->anggota->no_anggota])) {
+                                $data_simpanan[$sim->anggota->no_anggota] = ['nama' => $sim->anggota->nama];
+                            }
+                            if (isset($data_simpanan[$sim->anggota->no_anggota][$sim->jenis_simpanan_id])) {
+                                $data_simpanan[$sim->anggota->no_anggota][$sim->jenis_simpanan_id] += $sim->nominal;
+                            } else {
+                                $data_simpanan[$sim->anggota->no_anggota][$sim->jenis_simpanan_id] = $sim->nominal;
+                            }
+                        }
+                    }
+                }
+
                 return view('keuangan.simpanan.ssshusp', ['data_simpanan' => $data_simpanan]);
                 break;
             case 'akumulasi':
@@ -63,6 +81,12 @@ class KeuanganController extends Controller
             'keterangan' => 'required'
         ]);
 
+        $request->merge([
+            'jenis_simpanan_id' => 1,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
         $simpanan = Simpanan::create($request->all());
 
         if (!$simpanan) {
@@ -70,7 +94,7 @@ class KeuanganController extends Controller
         }
 
         $anggota = Anggota::where('no_anggota', $request->no_anggota)->first();
-        $anggota->total += $request->nominal;
+        $anggota->total_simpanan += $request->nominal;
         $anggota->save();
 
         return response()->json(['message' => 'Simpanan created', 'data' => $simpanan], 200);
@@ -107,7 +131,7 @@ class KeuanganController extends Controller
             }
         }
 
-        return view('keuangan.simpanan.sw', ['selectedAnggota' => $selectedAnggota, 'data_simpanan' => $data_simpanan]);                
+        return view('keuangan.simpanan.sw', ['selectedAnggota' => $selectedAnggota, 'data_simpanan' => $data_simpanan]);
     }
 
     public function update(Request $request, string $id)
@@ -147,6 +171,27 @@ class KeuanganController extends Controller
         return response()->json(['message' => 'Simpanan deleted'], 200);
     }
 
+    public function storeSSSHUSP(Request $request)
+    {
+        $request->validate([
+            'no_anggota' => 'required',
+            'nominal' => 'required',
+            'jenis_simpanan_id' => 'required',
+        ]);
+
+        $simpanan = Simpanan::create($request->all());
+
+        if (!$simpanan) {
+            return response()->json(['message' => 'Simpanan not created'], 500);
+        }
+
+        $anggota = Anggota::where('no_anggota', $request->no_anggota)->first();
+        $anggota->total_simpanan += $request->nominal;
+        $anggota->save();
+
+        return response()->json(['message' => 'Simpanan created', 'data' => $simpanan], 200);
+    }
+
     public function editSSSHUSP(string $no_anggota)
     {
         $data_simpanan = [];
@@ -156,10 +201,27 @@ class KeuanganController extends Controller
             return response()->json(['message' => 'Poin not found'], 404);
         }
 
-        $data_simpanan = Simpanan::with('anggota')
+        $simpanan = Simpanan::with('anggota')
             ->whereIn('jenis_simpanan_id', [2, 3, 4])
             ->get()
             ->groupBy('jenis_simpanan_id');
+
+        $data_simpanan = [];
+        foreach ($simpanan as $jenis_simpanan_id => $simpanan_per_jenis) {
+            foreach ($simpanan_per_jenis as $sim) {
+                // Pastikan data anggota ada sebelum mengakses properti 'nama'
+                if ($sim->anggota) {
+                    if (!isset($data_simpanan[$sim->anggota->no_anggota])) {
+                        $data_simpanan[$sim->anggota->no_anggota] = ['nama' => $sim->anggota->nama];
+                    }
+                    if (isset($data_simpanan[$sim->anggota->no_anggota][$sim->jenis_simpanan_id])) {
+                        $data_simpanan[$sim->anggota->no_anggota][$sim->jenis_simpanan_id] += $sim->nominal;
+                    } else {
+                        $data_simpanan[$sim->anggota->no_anggota][$sim->jenis_simpanan_id] = $sim->nominal;
+                    }
+                }
+            }
+        }
 
         return view('keuangan.simpanan.ssshusp', ['selectedAnggota' => $selectedAnggota, 'data_simpanan' => $data_simpanan]);
     }
