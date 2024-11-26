@@ -8,6 +8,7 @@ use App\Models\Fakultas;
 use App\Models\Pendaftaran;
 use App\Models\ProgramStudi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class PendaftaranController extends Controller
@@ -120,8 +121,12 @@ class PendaftaranController extends Controller
     {
         $pendaftaran = Pendaftaran::where('status', 'accepted')->get();
 
-        foreach ($pendaftaran as $p) {
-            $no_anggota = $p->nim;
+        foreach ($pendaftaran as $i => $p) {
+            $angkatan = substr($p->nim, 3, 2);
+            $bulan = Carbon::parse($p->created_at)->format('m');
+            $tahun = Carbon::parse($p->created_at)->format('y');
+            $urutan = sprintf('%03d', $i + 1);
+            $no_anggota = sprintf('%s.%s.%s.%s', $urutan, $angkatan, $bulan, $tahun);
             $anggota = Anggota::create([
                 'no_anggota' => $no_anggota,
                 'nama' => $p->nama,

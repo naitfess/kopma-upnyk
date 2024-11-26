@@ -12,8 +12,8 @@ class DashboardController extends Controller
     {
         $data = [
             'anggota' => Anggota::count(),
-            'pendaftar' => Pendaftaran::where('status', 'pending')->count(),
-            'diterima' => Pendaftaran::where('status', 'diterima')->count(),
+            'pendaftar' => Pendaftaran::where('status', ['new', 'pending'])->count(),
+            'diterima' => Pendaftaran::where('status', 'accepted')->count(),
         ];
         return view('dashboard.index', $data);
     }
