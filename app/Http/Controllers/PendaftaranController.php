@@ -153,7 +153,7 @@ class PendaftaranController extends Controller
             $p->delete();
         }
 
-        return response()->json(['message' => 'Pendaftaran berhasil dipindahkan ke anggota'], 200);
+        return back()->with('success', 'Pendaftaran berhasil dipindahkan ke anggota');
     }
 
     public function destroy(string $id)

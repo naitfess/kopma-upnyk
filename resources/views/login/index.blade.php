@@ -147,6 +147,11 @@
 </head>
 
 <body>
+    @if(session('message'))
+    <script>
+        alert("{{ session('message') }}");
+    </script>
+    @endif
     <div class="login-container">
         <h2>Selamat Datang</h2>
         <form action="/login" method="post">

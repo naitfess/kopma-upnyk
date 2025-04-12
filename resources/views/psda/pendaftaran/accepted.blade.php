@@ -14,6 +14,11 @@
 </head>
 
 <body class="dark-mode">
+    @if (session('message'))
+       <script>
+              alert("{{ session('message') }}");
+        </script> 
+    @endif
     <nav class="header navbar fixed-top">
         <a class="navbar-brand" href="{{ route('dashboard') }}">
             <img src="{{ asset('img/Logo.png') }}" alt="Logo Kopma" height="45" style="padding-left: 40px;">
@@ -123,40 +128,53 @@
                         onclick="return confirm('Apa anda yakin salin semua data?')"><button
                             style="float: right; margin-bottom:15px; margin-right:10px;"
                             class="btn btn-success t1">Pindah ke DB Anggota</button></a>
-                    <form action="" method="POST">
+                    <form action="{{ route('psda.group.store') }}" method="POST">
+                        @csrf
                         <select id="jenis" class="input" name="jenis" required>
                             <option value="" selected>-Pilih Jenis Link-</option>
                             <option value="1">Link Keluarga Kopma</option>
                             <option value="2">Link Diklat</option>
                         </select>
                         <input class="input" type="text" name="link" placeholder="Link grup WhatsApp">
-                        <button class="button" type="submit" name="save">Submit</button>
+                        <button class="button" type="submit">Submit</button>
                     </form>
                     <table id="tableLink" class="table table-dark table-bordered">
                         <tr>
                             <th scope="row">Link Keluarga Kopma</th>
                             <th scope="row">Aksi</th>
                         </tr>
+                        @foreach ($grup1 as $g1)
                         <tr>
-                            <td scope="row"></td>
+                            <td scope="row">{{ $g1->link }}</td>
                             <td scope="row"><a href=""
-                                    onclick="return confirm('Yakin hapus link keluarga kopma?')"><button
-                                        type="button" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                    onclick="return confirm('Yakin hapus link keluarga kopma?')">
+                                    <form action="{{ route('psda.grup.delete', ['id' => $g1->id]) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
                             </td>
                         </tr>
+                        @endforeach
                     </table>
                     <table id="tableLink" class="table table-dark table-bordered">
                         <tr>
                             <th scope="row">Link Peserta Diklat</th>
                             <th scope="row">Aksi</th>
                         </tr>
+                        @foreach ($grup2 as $g2)
                         <tr>
-                            <td scope="row"></td>
+                            <td scope="row">{{ $g2->link }}</td>
                             <td scope="row"><a href=""
-                                    onclick="return confirm('Yakin hapus link peserta diklat?')"><button
-                                        type="button" class="btn btn-danger"><i class="bi bi-trash"></i></button>
-                            </td>
+                                onclick="return confirm('Yakin hapus link keluarga kopma?')">
+                                <form action="{{ route('psda.grup.delete', ['id' => $g2->id]) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                        </td>
                         </tr>
+                        @endforeach
                     </table>
                     <table id="dataTable" class="table table-dark table-striped table-hover table-bordered"
                         style="width: max-content;">

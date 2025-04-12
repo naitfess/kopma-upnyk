@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Grup;
 use App\Models\Poin;
 use App\Models\User;
 use App\Models\Anggota;
@@ -36,7 +37,11 @@ class PSDAController extends Controller
                 $data = ['pendaftaran' => Pendaftaran::where('status', 'confirm')->get()];
                 return view('psda.pendaftaran.confirm', $data);
             case 'accepted':
-                $data = ['pendaftaran' => Pendaftaran::where('status', 'accepted')->get()];
+                $data = [
+                    'pendaftaran' => Pendaftaran::where('status', 'accepted')->get(),
+                    'grup1' => Grup::where('jenis', '1')->get(),
+                    'grup2' => Grup::where('jenis', '2')->get(),
+                ];
                 return view('psda.pendaftaran.accepted', $data);
             default:
                 return abort(404, 'Status tidak ditemukan');
@@ -190,5 +195,33 @@ class PSDAController extends Controller
 
         $selectedPoin->delete();
         return response()->json(['message' => 'Poin deleted'], 200);
+    }
+
+    public function storeLink(Request $request)
+    {
+        $request->validate([
+            'jenis' => 'required',
+            'link' => 'required',
+        ]);
+
+        $grup = Grup::create($request->all());
+
+        if (!$grup) {
+            return back()->with('message', 'Pendaftaran failed');
+        }
+
+        return back()->with('message', 'Pendaftaran success');
+    }
+
+    public function deleteLink(string $id)
+    {
+        $selectedGrup = Grup::find($id);
+
+        if (!$selectedGrup) {
+            return back()->with('message', 'Grup not found');
+        }
+
+        $selectedGrup->delete();
+        return back()->with('message', 'Grup deleted');
     }
 }

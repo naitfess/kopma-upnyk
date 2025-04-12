@@ -12,6 +12,7 @@ class Grup extends Model
     use HasFactory;
 
     protected $fillable = [
+        'jenis',
         'link',
     ];
 

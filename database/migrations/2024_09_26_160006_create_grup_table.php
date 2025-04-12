@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('grup', function (Blueprint $table) {
             $table->id();
+            $table->string('jenis');
             $table->string('link');
         });
     }

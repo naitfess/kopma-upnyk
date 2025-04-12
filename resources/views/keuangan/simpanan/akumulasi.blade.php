@@ -126,24 +126,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
-                            $sql2 = "SELECT * FROM simpanan";
-                            $result = $conn->query($sql2);
-                            if ($result->num_rows > 0) :
-                                while ($r2 = $result->fetch_assoc()) :
-                                    $id = $r2['id'];
-                            ?>
-                            <tr>
-                                <td scope="row"><?php echo htmlspecialchars($r2['no_anggota']); ?></td>
-                                <td scope="row"><?php echo htmlspecialchars($r2['nama']); ?></td>
-                                <td scope="row">Rp. <?php echo htmlspecialchars($r2['total']); ?></td>
-                            </tr>
-                            <?php endwhile; ?>
-                            <?php else : ?>
-                            <tr>
-                                <td colspan="3">No results found</td>
-                            </tr>
-                            <?php endif; ?>
+                            
                         </tbody>
                     </table>
                 </div>
